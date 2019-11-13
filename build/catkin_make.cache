@@ -1,0 +1,2 @@
+
+-DCATKIN_DEVEL_PREFIX=/home/dank-engine/trtlbt/devel -DCMAKE_INSTALL_PREFIX=/home/dank-engine/trtlbt/install -G Unix Makefiles

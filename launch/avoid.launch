@@ -1,0 +1,9 @@
+<launch>
+
+    <!-- <node pkg="hw3" name="feelforce" output="screen" type="feelforce.py"/> -->
+    <node pkg="hw3" name="feelforce" type="feelforce.py"/> 
+    <!-- <node pkg="hw3" name="turn" type="turn.py"/> -->
+    <!-- <node pkg="hw3" name="forward" type="forward.py"/> -->
+    <node pkg="hw3" name="distancetracker" output="screen" type="distancetracker.py"/> 
+    <!-- <node pkg="hw3" name="distancetracker" output="screen" type="distancetracker.py"/> -->
+</launch>
