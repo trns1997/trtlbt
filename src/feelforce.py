@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import random
 import numpy as np
 from std_msgs.msg import String
 from sensor_msgs.msg import LaserScan
@@ -13,19 +14,25 @@ def callBack(msg):
     front  = np.min(msg.ranges[size/2-30:size/2+30]) # front: middle of scan range +-30 and get the min
     right_range = msg.ranges[0:size/2 - 29] # left: left most to middle - 30
     left_range = msg.ranges[size/2+31:size] # right: middle + 30 to the right most
-    print(front, np.mean(right_range))
-    if front < 0.7: #To preven the robot from hitting the wall head on
-        pos.linear.x = -0.5 # constant linear speed
+    state = random.randrange(0,3) # add a random element to the code, so it doesn't get stuck in some loops
+    print(front, np.mean(right_range), state)
+    if front < 0.7: # To prevent the robot from hitting the wall head on
+        pos.linear.x = -front*1.2 # constant linear speed
         pos.angular.z = -2*np.mean(right_range) + np.mean(left_range) # some angulat speed just to get it out from a stuck state
         pub.publish(pos) # publish to cmd node
 
-    elif np.mean(right_range) > 2.25:
-        pos.linear.x = 0.5 # constant linear speed
-        pos.angular.z = -0.6*np.mean(right_range)
+    elif np.mean(right_range) > 2.1 and state == 1: # when there is space on the right AND the random element
+        pos.linear.x = front*0.1 # constant linear speed
+        pos.angular.z = -np.mean(right_range)
         pub.publish(pos) # publish to cmd node
     
+    elif np.mean(left_range) > 2.1 and state == 0: # when there is space on the left AND the random element
+        pos.linear.x = front*0.1 # constant linear speed
+        pos.angular.z = np.mean(left_range)
+        pub.publish(pos) # publish to cmd node
+
     else:
-        pos.linear.x = 0.5
+        pos.linear.x = front*0.7
         pos.angular.z = -np.mean(right_range) + np.mean(left_range) # take an averge of the ranges 
                                                                     # on the left hemisphere and right hemispher of the scan
                                                                     # and take the differenece, causing the robot to go to the freest space on the map
