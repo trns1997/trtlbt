@@ -3,6 +3,7 @@
 
 import rospy
 from std_msgs.msg import String
+from std_msgs.msg import Float64
 from sensor_msgs.msg import LaserScan
 import numpy
 import time
@@ -31,6 +32,7 @@ class DistanceTracker():
         print(self.startTrans, self.startRot)
         while not rospy.is_shutdown():
             try:
+                pub = rospy.Publisher('/dist', Float64, queue_size=10) # Make new /dist topic to publish to
                 curTime = time.time()
                 elapsed = curTime - self.startTime
 
@@ -43,7 +45,8 @@ class DistanceTracker():
                 if (distanceTraveled > self.maxDistance):
                     self.maxDistance = distanceTraveled
                     self.maxPos = [curTrans[0], curTrans[1]]
-                
+                    
+                pub.publish(distanceTraveled) # publish to the /dist topic which the /freeforce node will subscribe to 
                 rospy.loginfo("Time: %s, Distance traveled: %s, (%s, %s)", str(elapsed), str(self.maxDistance), str(self.maxPos[0]), str(self.maxPos[1]))
 
             except(tf.LookupException, tf.ConnectivityException):
